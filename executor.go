@@ -20,7 +20,7 @@ func executor(command string, c *net.Conn) (string, error) {
 	firstTerm := extractFirstTerm(command)
 
 	// if firstTerm matches a
-	// spacecommand then the
+	// spaceCommand then the
 	// spaceExecutor is called
 	if stringInSlice(firstTerm, spaceCommands) {
 		return spaceExecutor(command, *&c)
