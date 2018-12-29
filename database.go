@@ -1,37 +1,58 @@
+// functions and variables that
 package main
 
 import (
 	"errors"
+	"io/ioutil"
 	"strings"
 )
 
-// list of all usable commands
-var commands = []string{
-	"new", // TODO creates a new database
-	"bye", // closes the connection to db
-	"drop", // TODO deletes an existing database
-	"list", // TODO lists all existing databases
-	"rename", // TODO renames and existing database
-	"commands", // displays a list of commands
-	"version", // TODO displays GSDB's running version
-	"datetime", // TODO shows current date and time of database
+// slice of all commands
+// for input validation as
+// well as for documentation
+// purposes
+var databaseCommands = []string{
+	"get",
+	"set",
+	"del",
+	"help",
+	"info",
 }
 
-// main executor through which all commands
-// passed through the tcp server passes though
-func executor(command string) (string, error) {
+func databaseExecutor(command string) (string, error) {
 
-	switch command {
-		case commands[5]:
-			return cCommands(), nil
-		default:
-			return "", errors.New("command not recognized")
+	var databases []string
+	database := extractFirstTerm(command)
+
+	files, err := ioutil.ReadDir("/tmp/gsdb/")
+	check(err)
+
+	// loop over database files and
+	// store them without their
+	// extension in `databases` slice
+	for _, f := range files {
+		databases = append(databases, removeExtension(f.Name()))
 	}
-}
 
-// command type function
-// lists all the commands available for
-// the GSDB version that's running on system
-func cCommands() string {
-	return strings.Join(commands, "\n")
+	// check if database entered exists
+	// in the slice of database names
+	if !stringInSlice(database, databases) {
+		return "", errors.New(database + " does not exist")
+	}
+
+	databaseCommand := extractCommandFromDatabaseCommand(command)
+
+	if len(databaseCommand) == 0 {
+		return "", errors.New("command not specified for database `" + database + "`")
+	}
+
+	// return commandError if database
+	// command is not found right after
+	// the database name specifier
+	if !stringInSlice(databaseCommand[0], databaseCommands) {
+		return "", commandError(databaseCommand[0])
+	}
+
+	return strings.Join(databaseCommand, " "), nil
+
 }

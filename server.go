@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net"
 	"strings"
@@ -20,14 +19,27 @@ func serve(c net.Conn) {
 
 		command := strings.TrimSpace(string(remoteData))
 
-		if command == "bye" {
+		if len(command) == 0 {
+			continue
+		}
+
+		if command == "bye" || command == "exit" {
+			_, _ = c.Write([]byte("bye\n"))
 			break
 		}
 
-		databaseName := strings.Split(command, " ")[0]
-		fmt.Println(databaseName)
+		response, err := executor(command, &c)
 
-		_, _ = c.Write([]byte("you entered " + databaseName + "\n"))
+		if err != nil {
+			_, _ = c.Write([]byte(err.Error()))
+		}
+
+		if len(response) == 0 {
+			_, _ = c.Write([]byte("\n"))
+			continue
+		}
+
+		_, _ = c.Write([]byte(response + "\n"))
 
 	}
 
