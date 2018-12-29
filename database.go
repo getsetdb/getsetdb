@@ -1,4 +1,11 @@
 // functions and variables that
+// are used to interact with
+// specified database for RUD
+// proper validation for this
+// is extremely important for
+// these commands as other
+// clients can issue erroneous
+// directory to a database
 package main
 
 import (
@@ -19,11 +26,24 @@ var databaseCommands = []string{
 	"info",
 }
 
+// databaseExecutor for validating
+// and executing commands for databases
+// existing on the running system
 func databaseExecutor(command string) (string, error) {
 
+	// slice that will store
+	// names of database which
+	// will be extracted from
+	// path /tmp/gsdb/ containing
+	// the database files for it
+	// by removing the ".gsdb"
+	// extension from the end of
+	// the file name
 	var databases []string
 	database := extractFirstTerm(command)
 
+	// read directory for
+	// listing all files
 	files, err := ioutil.ReadDir("/tmp/gsdb/")
 	check(err)
 
@@ -40,8 +60,18 @@ func databaseExecutor(command string) (string, error) {
 		return "", errors.New(database + " does not exist")
 	}
 
+	// extract database command
+	// by getting all strings in
+	// a slice after the first term
+	// which will be the database
+	// specifier that has been used
+	// for existence validation
 	databaseCommand := extractCommandFromDatabaseCommand(command)
 
+	// if no strings were provided
+	// then the databaseCommand slice
+	// will have a length of 0 raising
+	// a command type error
 	if len(databaseCommand) == 0 {
 		return "", errors.New("command not specified for database `" + database + "`")
 	}
