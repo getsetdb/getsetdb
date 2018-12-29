@@ -37,6 +37,15 @@ func check(err error) {
 	}
 }
 
+func charInString(text, del string) bool {
+	for _, char := range text {
+		if del == string(char) {
+			return true
+		}
+	}
+	return false
+}
+
 // function to split strings
 // according to a delimiter
 func splitString(command string, del string) []string {
