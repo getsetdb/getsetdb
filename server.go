@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"log"
 	"net"
 	"strings"
@@ -19,7 +20,12 @@ func serve(c net.Conn) {
 		// get data from
 		// client connection
 		remoteData, err := bufio.NewReader(c).ReadString('\n')
-		check(err)
+
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			check(err)
+		}
 
 		// remove all unnecessary spaces
 		command := strings.TrimSpace(string(remoteData))
@@ -50,7 +56,7 @@ func serve(c net.Conn) {
 		// an error type response
 		// is issued to the client
 		if err != nil {
-			_, _ = c.Write([]byte("error :" + err.Error()))
+			_, _ = c.Write([]byte("error : " + err.Error()))
 		}
 
 		// send back response
