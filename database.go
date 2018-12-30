@@ -10,8 +10,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
-	"strings"
+	"os"
 )
 
 // slice of all commands
@@ -83,6 +84,29 @@ func databaseExecutor(command string) (string, error) {
 		return "", commandError(databaseCommand[0])
 	}
 
-	return strings.Join(databaseCommand, " "), nil
+	switch databaseCommand[0] {
+		case databaseCommands[4]: // `info`
+			return dInfo(database)
+		default:
+			return "", errors.New("command `" + databaseCommand[0] + "` not recognized")
+	}
+
+}
+
+/************** COMMANDS **************/
+
+// gets info for database file
+// in the getsetdb running
+func dInfo(databaseName string) (string, error) {
+
+	// open and read file
+	// info into `file`
+	file, err := os.Stat(path(databaseName))
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("size : %d\npath : %s", file.Size(), path(databaseName)), nil
 
 }
