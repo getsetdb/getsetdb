@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // slice of all commands
@@ -21,13 +22,13 @@ import (
 // well as for documentation
 // purposes
 var databaseCommands = []string{
-	"get",		// gets value from a key
-	"set",		// TODO sets value to a key
-	"del",		// TODO deleted a pair
-	"all",		// lists all pairs
-	"help",		// TODO lists some documentation
-	"info",		// returns size and path of database
-	"count",	// TODO returns number of pairs in database
+	"get",   // gets value from a key
+	"set",   // TODO sets value to a key
+	"del",   // TODO deleted a pair
+	"all",   // lists all pairs
+	"help",  // TODO lists some documentation
+	"info",  // returns size and path of database
+	"count", // returns number of pairs in database
 }
 
 // databaseExecutor for validating
@@ -93,6 +94,14 @@ func databaseExecutor(command string) (string, error) {
 				return "", errors.New("key value not specified for database `" + databaseName + "`")
 			}
 			return dGet(databaseName, databaseCommand[1])
+		case databaseCommands[1]: // `set`
+			if len(databaseCommand) < 3 {
+				if len(databaseCommand) < 2 {
+					return "", errors.New("key value not specified for database `" + databaseName + "`")
+				}
+				return "", errors.New("value for key `" + databaseCommand[1] + "` not specified for database `" + databaseName + "`")
+			}
+			return dSet(databaseName, databaseCommand[1], strings.Join(databaseCommand[2:], " "))
 		case databaseCommands[3]: // `all`
 			return dAll(databaseName)
 		case databaseCommands[5]: // `info`
@@ -129,6 +138,23 @@ func dGet(databaseName string, key string) (string, error) {
 
 	return value, err
 
+}
+
+// sets a value to
+// the key provided
+func dSet(databaseName string, key string, value string) (string, error) {
+	file, err := os.OpenFile(path(databaseName), os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	check(err)
+
+	defer file.Close()
+
+	pair := fmt.Sprintf("%s : %s", key, value)
+
+	if _, err = file.WriteString(pair + "\n"); err != nil {
+		return "", err
+	}
+
+	return pair, nil
 }
 
 // returns all keys
