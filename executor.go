@@ -4,13 +4,9 @@
 // the spaceExecutor
 package main
 
-import (
-	"net"
-)
-
 // main executor through which all spaceCommands
 // passed through the tcp server passes though
-func executor(command string, c *net.Conn) (string, error) {
+func executor(command string) (string, error) {
 
 	// first string of command
 	// entered with a delemiter
@@ -23,7 +19,7 @@ func executor(command string, c *net.Conn) (string, error) {
 	// spaceCommand then the
 	// spaceExecutor is called
 	if stringInSlice(firstTerm, spaceCommands) {
-		return spaceExecutor(command, *&c)
+		return spaceExecutor(command)
 	}
 
 	// else the databaseExecutor
