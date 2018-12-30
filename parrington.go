@@ -77,5 +77,5 @@ func (p Parrington) getValue(key string) (string, error) {
 			return strings.Join(piece[2:], " "), nil
 		}
 	}
-	return "", errors.New("no key found")
+	return "", errors.New("no value found for key `" + key + "`")
 }
