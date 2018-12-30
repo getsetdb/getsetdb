@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
 // slice of all commands
@@ -20,12 +21,13 @@ import (
 // well as for documentation
 // purposes
 var databaseCommands = []string{
-	"get",
-	"set",
-	"del",
-	"all",
-	"help",
-	"info",
+	"get",		// gets value from a key
+	"set",		// TODO sets value to a key
+	"del",		// TODO deleted a pair
+	"all",		// lists all pairs
+	"help",		// TODO lists some documentation
+	"info",		// returns size and path of database
+	"count",	// TODO returns number of pairs in database
 }
 
 // databaseExecutor for validating
@@ -95,6 +97,8 @@ func databaseExecutor(command string) (string, error) {
 			return dAll(databaseName)
 		case databaseCommands[5]: // `info`
 			return dInfo(databaseName)
+		case databaseCommands[6]: // `count`
+			return dCount(databaseName)
 		default:
 			return "", errors.New("command `" + databaseCommand[0] + "` not recognized")
 	}
@@ -108,12 +112,22 @@ func databaseExecutor(command string) (string, error) {
 // extract value from key provided
 func dGet(databaseName string, key string) (string, error) {
 
+	if _, hasKey := pairs[key]; hasKey {
+		return pairs[key], nil
+	}
+
 	p := Parrington{databasePath: path(databaseName)}
 	p.writeToBody()
 	p.writeToPairs()
 
 	// gets value from key
-	return p.getValue(key)
+	value, err := p.getValue(key)
+
+	if err == nil {
+		pairs[key] = value
+	}
+
+	return value, err
 
 }
 
@@ -141,4 +155,9 @@ func dInfo(databaseName string) (string, error) {
 
 	return fmt.Sprintf("size : %d bytes\npath : %s", file.Size(), path(databaseName)), nil
 
+}
+
+func dCount(databaseName string) (string, error) {
+	r, _ := os.Open(path(databaseName))
+	return "count : " + strconv.Itoa(lineCounter(r)), nil
 }

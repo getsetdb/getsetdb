@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var pairs = map[string]string{}
+
 // opens a new connection
 // every time a client is
 // connected to tcp port
@@ -65,6 +67,7 @@ func serve(c net.Conn) {
 
 	}
 
+	log.Println(pairs)
 	log.Println("terminated connection with", c.RemoteAddr().String())
 
 	_ = c.Close()
