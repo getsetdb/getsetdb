@@ -94,7 +94,7 @@ func extractCommandFromDatabaseCommand(command string) []string {
 
 // optimized line counter copied
 // shamelessly from https://bit.ly/2TkIEOy
-func lineCounter(r io.Reader) (int, error) {
+func lineCounter(r io.Reader) int {
 	buf := make([]byte, 32*1024)
 	count := 0
 	lineSep := []byte{'\n'}
@@ -105,10 +105,10 @@ func lineCounter(r io.Reader) (int, error) {
 
 		switch {
 		case err == io.EOF:
-			return count, nil
+			return count + 1
 
 		case err != nil:
-			return count, err
+			return count + 1
 		}
 	}
 }
