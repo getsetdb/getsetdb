@@ -2,7 +2,8 @@ package main
 
 import (
 	"errors"
-	"net"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -10,22 +11,24 @@ import (
 
 // list of all usable spaceCommands
 var spaceCommands = []string{
-	"new",           // TODO creates a new database
+	"new",           // creates new databases provided
 	"drop",          // TODO deletes an existing database
-	"list",          // TODO lists all existing databases
+	"list",          // lists all existing databases
 	"rename",        // TODO renames and existing database
 	"commands", 	 // displays a list of spaceCommands
 	"version",       // TODO displays GSDB's running version
-	"datetime",      // TODO shows current date and time of database
+	"datetime",      // shows current date and time of database
 }
 
-func spaceExecutor(command string, c *net.Conn) (string, error) {
+func spaceExecutor(command string) (string, error) {
 
 	firstTerm := extractFirstTerm(command)
 
 	switch firstTerm {
 		case spaceCommands[0]: // new
-			return sNew(command, &*c)
+			return sNew(command)
+		case spaceCommands[2]: // list
+			return sList()
 		case spaceCommands[4]: // commands
 			return sCommands()
 		case spaceCommands[6]: // datetime
@@ -40,7 +43,7 @@ func spaceExecutor(command string, c *net.Conn) (string, error) {
 // command type function
 // creates new database
 // inside of the GSDB space
-func sNew(command string, c *net.Conn) (string, error) {
+func sNew(command string) (string, error) {
 
 	commandSlice := splitString(command, " ")
 
@@ -50,28 +53,24 @@ func sNew(command string, c *net.Conn) (string, error) {
 
 	for _, databaseName := range commandSlice[1:] {
 
-		x := *c
-		_, _ = x.Write([]byte("creating database `" + databaseName + "`... "))
-
 		// check if database already
 		// exists in the path for
 		// gsdb databases - /tmp/gsdb/
 		if _, err := os.Stat(path(databaseName)); !os.IsNotExist(err) {
-			return "", errors.New("\ndatabase `" + databaseName + "` already exists")
+			return "", errors.New("database `" + databaseName + "` already exists")
 		}
 
 		file, err := os.Create(path(databaseName))
 		check(err)
 
 		_ = file.Close()
-		_, _ = x.Write([]byte("done\n"))
 	}
 
 	if len(commandSlice) > 2 {
-		return "created databases " + strings.Join(commandSlice[1:], ", "), nil
+		return "created databases `" + strings.Join(commandSlice[1:], "`, `") + "`", nil
 	}
 
-	return "created database", nil
+	return "created database `" + commandSlice[1] + "`", nil
 
 }
 
@@ -87,4 +86,25 @@ func sDatetime() (string, error) {
 // the GSDB version that's running on system
 func sCommands() (string, error) {
 	return strings.Join(spaceCommands, "\n"), nil
+}
+
+// command type function
+// lists all database available
+// on the gsdb path /tmp/gsdb/
+func sList() (string, error) {
+	databases, err := ioutil.ReadDir("/tmp/gsdb/")
+	check(err)
+
+	var files []string
+
+	// loop over all database files
+	// and append the string in format
+	// "<num>. <databaseName>" to files
+	for index, database := range databases {
+		files = append(files, fmt.Sprintf("%d : %s", index+1, removeExtension(database.Name())))
+	}
+
+	// join array of list
+	return strings.Join(files, "\n"), nil
+
 }

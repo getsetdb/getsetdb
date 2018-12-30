@@ -49,7 +49,7 @@ func serve(c net.Conn) {
 		// get response as an
 		// error response
 		// or a success response
-		response, err := executor(command, &c)
+		response, err := executor(command)
 
 		// if error was received
 		// as a response then
