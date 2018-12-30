@@ -15,6 +15,13 @@ func main() {
 		check(err)
 	}
 
+	if len(os.Args) != 1 {
+		if os.Args[1][0] == 'c' {
+			clientShell()
+			os.Exit(0)
+		}
+	}
+
 	ln, err := net.Listen("tcp4", port)
 	check(err)
 
