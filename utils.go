@@ -3,7 +3,9 @@
 package main
 
 import (
+	"bytes"
 	"errors"
+	"io"
 	"path/filepath"
 	"strings"
 )
@@ -88,4 +90,25 @@ func extractFirstTerm(command string) string {
 // be executed upon
 func extractCommandFromDatabaseCommand(command string) []string {
 	return strings.Split(command, " ")[1:]
+}
+
+// optimized line counter copied
+// shamelessly from https://bit.ly/2TkIEOy
+func lineCounter(r io.Reader) (int, error) {
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }
