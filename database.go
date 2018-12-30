@@ -23,6 +23,7 @@ var databaseCommands = []string{
 	"get",
 	"set",
 	"del",
+	"all",
 	"help",
 	"info",
 }
@@ -86,11 +87,13 @@ func databaseExecutor(command string) (string, error) {
 
 	switch databaseCommand[0] {
 		case databaseCommands[0]: // `get`
-			if len(databaseCommands) < 2 {
+			if len(databaseCommand) < 2 {
 				return "", errors.New("key value not specified for database `" + databaseName + "`")
 			}
 			return dGet(databaseName, databaseCommand[1])
-		case databaseCommands[4]: // `info`
+		case databaseCommands[3]: // `all`
+			return dAll(databaseName)
+		case databaseCommands[5]: // `info`
 			return dInfo(databaseName)
 		default:
 			return "", errors.New("command `" + databaseCommand[0] + "` not recognized")
@@ -112,6 +115,16 @@ func dGet(databaseName string, key string) (string, error) {
 	// gets value from key
 	return p.getValue(key)
 
+}
+
+// returns all keys
+// existing in database
+func dAll(databaseName string) (string, error) {
+	p := Parrington{databasePath: path(databaseName)}
+	p.writeToBody()
+	p.writeToPairs()
+
+	return p.getKeys()
 }
 
 // gets info for database file
