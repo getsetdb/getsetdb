@@ -3,11 +3,17 @@ package main
 import (
 	"log"
 	"net"
+	"os"
 )
 
 const port string = ":4998"
 
 func main() {
+
+	if _, err := os.Stat("/tmp/gsdb/"); os.IsNotExist(err) {
+		err = os.Mkdir("/tmp/gsdb/", 0755)
+		check(err)
+	}
 
 	ln, err := net.Listen("tcp4", port)
 	check(err)
