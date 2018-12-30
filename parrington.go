@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-// a GSDB parser written for
+// Parrington a GSDB parser written for
 // internal usage inside the
 // GSDB server for reading
 // and deriving values from
 // keys via methods for it
 type Parrington struct {
-	body string
-	pairs []string
+	body         string
+	pairs        []string
 	databasePath string
 }
 
@@ -56,11 +56,11 @@ func (p *Parrington) writeToPairs() {
 // of a key pair on a single line
 func dataInferer(value string) string {
 
-	if !charInString(value, " ") {                    // check if there's a space in the value
+	if !charInString(value, " ") { // check if there's a space in the value
 		return "List"
 	} else if _, err := strconv.Atoi(value); err == nil { // check if the value can be converted to a number
 		return "Number"
-	} else {                                              // return String as default value
+	} else { // return String as default value
 		return "String"
 	}
 
@@ -88,7 +88,7 @@ func (p Parrington) getKeys() (string, error) {
 
 	for index, line := range p.pairs {
 		piece := splitString(line, " ")
-		keys = append(keys, strconv.Itoa(index + 1) + " : " + piece[0])
+		keys = append(keys, strconv.Itoa(index+1)+" : "+piece[0])
 	}
 
 	if len(keys) != 0 {
