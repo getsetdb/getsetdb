@@ -41,7 +41,7 @@ func databaseExecutor(command string) (string, error) {
 	// extension from the end of
 	// the file name
 	var databases []string
-	database := extractFirstTerm(command)
+	databaseName := extractFirstTerm(command)
 
 	// read directory for
 	// listing all files
@@ -57,8 +57,8 @@ func databaseExecutor(command string) (string, error) {
 
 	// check if database entered exists
 	// in the slice of database names
-	if !stringInSlice(database, databases) {
-		return "", errors.New(database + " does not exist")
+	if !stringInSlice(databaseName, databases) {
+		return "", errors.New(databaseName + " does not exist")
 	}
 
 	// extract database command
@@ -74,7 +74,7 @@ func databaseExecutor(command string) (string, error) {
 	// will have a length of 0 raising
 	// a command type error
 	if len(databaseCommand) == 0 {
-		return "", errors.New("command not specified for database `" + database + "`")
+		return "", errors.New("command not specified for database `" + databaseName + "`")
 	}
 
 	// return commandError if database
@@ -85,8 +85,13 @@ func databaseExecutor(command string) (string, error) {
 	}
 
 	switch databaseCommand[0] {
+		case databaseCommands[0]: // `get`
+			if len(databaseCommands) < 2 {
+				return "", errors.New("key value not specified for database `" + databaseName + "`")
+			}
+			return dGet(databaseName, databaseCommand[1])
 		case databaseCommands[4]: // `info`
-			return dInfo(database)
+			return dInfo(databaseName)
 		default:
 			return "", errors.New("command `" + databaseCommand[0] + "` not recognized")
 	}
@@ -94,6 +99,20 @@ func databaseExecutor(command string) (string, error) {
 }
 
 /************** COMMANDS **************/
+
+// initialises Parrington to
+// read database file and
+// extract value from key provided
+func dGet(databaseName string, key string) (string, error) {
+
+	p := Parrington{databasePath: path(databaseName)}
+	p.writeToBody()
+	p.writeToPairs()
+
+	// gets value from key
+	return p.getValue(key)
+
+}
 
 // gets info for database file
 // in the getsetdb running
@@ -107,6 +126,6 @@ func dInfo(databaseName string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("size : %d\npath : %s", file.Size(), path(databaseName)), nil
+	return fmt.Sprintf("size : %d bytes\npath : %s", file.Size(), path(databaseName)), nil
 
 }
