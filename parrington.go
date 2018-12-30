@@ -79,3 +79,21 @@ func (p Parrington) getValue(key string) (string, error) {
 	}
 	return "", errors.New("no value found for key `" + key + "`")
 }
+
+// returns all keys
+// existing in database
+func (p Parrington) getKeys() (string, error) {
+
+	var keys []string
+
+	for _, line := range p.pairs {
+		piece := splitString(line, " ")
+		keys = append(keys, piece[0])
+	}
+
+	if len(keys) != 0 {
+		return strings.Join(keys, "\n"), nil
+	}
+
+	return "", errors.New("no keys in database")
+}
