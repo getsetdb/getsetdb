@@ -49,12 +49,15 @@ func sNew(command string, c *net.Conn) (string, error) {
 	}
 
 	for _, databaseName := range commandSlice[1:] {
+
 		x := *c
 		_, _ = x.Write([]byte("creating database `" + databaseName + "`... "))
-		_, err := os.Stat(path(databaseName))
 
-		if os.IsExist(err) {
-			return "", errors.New("database `" + databaseName + "` already exists")
+		// check if database already
+		// exists in the path for
+		// gsdb databases - /tmp/gsdb/
+		if _, err := os.Stat(path(databaseName)); !os.IsNotExist(err) {
+			return "", errors.New("\ndatabase `" + databaseName + "` already exists")
 		}
 
 		file, err := os.Create(path(databaseName))
