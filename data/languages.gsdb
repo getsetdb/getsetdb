@@ -1,0 +1,8 @@
+python : dynamic
+go : static
+ruby : dynamic
+php : dynamic
+c++ : static
+c : static
+java : static
+kotlin : static
