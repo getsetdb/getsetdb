@@ -26,7 +26,9 @@ func serve(c net.Conn) {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			check(err)
+			log.Println(err)
+			_ = c.Close()
+			break
 		}
 
 		// remove all unnecessary spaces
@@ -67,7 +69,6 @@ func serve(c net.Conn) {
 
 	}
 
-	log.Println(pairs)
 	log.Println("terminated connection with", c.RemoteAddr().String())
 
 	_ = c.Close()
