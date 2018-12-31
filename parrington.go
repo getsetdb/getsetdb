@@ -87,6 +87,9 @@ func (p Parrington) getKeys() (string, error) {
 	var keys []string
 
 	for index, line := range p.pairs {
+		if len(line) == 0 {
+			continue
+		}
 		piece := splitString(line, " ")
 		keys = append(keys, strconv.Itoa(index+1)+" : "+piece[0])
 	}
