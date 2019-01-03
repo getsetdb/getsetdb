@@ -14,9 +14,9 @@ var spaceCommands = []string{
 	"new",           // creates new databases provided
 	"del",           // deletes an existing database
 	"list",          // lists all existing databases
-	"rename",        // TODO renames and existing database
+	"rename",        // renames and existing database
 	"commands", 	 // displays a list of spaceCommands
-	"version",       // TODO displays GSDB's running version
+	"version",       // displays GSDB's running version
 	"datetime",      // shows current date and time of database
 }
 
@@ -25,15 +25,19 @@ func spaceExecutor(command string) (string, error) {
 	firstTerm := extractFirstTerm(command)
 
 	switch firstTerm {
-		case spaceCommands[0]: // new
+		case spaceCommands[0]: // `new`
 			return sNew(command)
-		case spaceCommands[1]: // del
+		case spaceCommands[1]: // `del`
 			return sDel(command)
-		case spaceCommands[2]: // list
+		case spaceCommands[2]: // `list`
 			return sList()
-		case spaceCommands[4]: // commands
+		case spaceCommands[3]: // `rename`
+			return sRename(command)
+		case spaceCommands[4]: // `commands`
 			return sCommands()
-		case spaceCommands[6]: // datetime
+		case spaceCommands[5]: // `version`
+			return sVersion()
+		case spaceCommands[6]: // `datetime`
 			return sDatetime()
 		default:
 			return "", commandError(command)
@@ -108,20 +112,6 @@ func sDel(command string) (string, error) {
 }
 
 // command type function
-// returns datetime
-// of the GSDB database
-func sDatetime() (string, error) {
-	return time.Now().String(), nil
-}
-
-// command type function
-// lists all the spaceCommands available for
-// the GSDB version that's running on system
-func sCommands() (string, error) {
-	return strings.Join(spaceCommands, "\n"), nil
-}
-
-// command type function
 // lists all database available
 // on the gsdb path /tmp/gsdb/
 func sList() (string, error) {
@@ -141,3 +131,53 @@ func sList() (string, error) {
 	return strings.Join(files, "\n"), nil
 
 }
+
+// command type function
+// renames existing database
+func sRename(command string) (string, error) {
+
+	commandSlice := splitString(command, " ")
+
+	if len(commandSlice) < 3 {
+		if len(commandSlice) < 2 {
+			return "", errors.New(fmt.Sprintf("database name not provided"))
+		}
+		return "", errors.New(fmt.Sprintf("new name for database `%s` not provided", commandSlice[1]))
+	}
+
+	oldDatabaseName := commandSlice[1]
+	newDatabaseName := commandSlice[2]
+
+	// check if database exists
+	// in path for gsdb space -
+	// /tmp/gsdb/
+	if _, err := os.Stat(path(oldDatabaseName)); !os.IsNotExist(err) { // if oldDatabaseName does exist
+		_ = os.Rename(path(oldDatabaseName), path(newDatabaseName))
+		return fmt.Sprintf("renamed `%s` to `%s`", oldDatabaseName, newDatabaseName), nil
+	} else { // if oldDatabaseName does not exist
+		return "", errors.New("database `" + oldDatabaseName + "` does not exist")
+	}
+
+}
+
+// command type function
+// lists all the spaceCommands available for
+// the GSDB version that's running on system
+func sCommands() (string, error) {
+	return strings.Join(spaceCommands, "\n"), nil
+}
+
+// command type function
+// returns version of gsdb
+// running on system
+func sVersion() (string, error) {
+	return version, nil
+}
+
+// command type function
+// returns datetime
+// of the GSDB database
+func sDatetime() (string, error) {
+	return time.Now().String(), nil
+}
+
