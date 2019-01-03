@@ -23,7 +23,7 @@ import (
 // purposes
 var databaseCommands = []string{
 	"get",   // gets value from a key
-	"set",   // TODO sets value to a key
+	"set",   // sets value to a key
 	"del",   // TODO deleted a pair
 	"all",   // lists all pairs
 	"help",  // TODO lists some documentation
@@ -185,5 +185,5 @@ func dInfo(databaseName string) (string, error) {
 
 func dCount(databaseName string) (string, error) {
 	r, _ := os.Open(path(databaseName))
-	return "count : " + strconv.Itoa(lineCounter(r)), nil
+	return "count : " + strconv.Itoa(lineCounter(r)-1), nil
 }
