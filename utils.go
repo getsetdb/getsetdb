@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -39,6 +40,9 @@ func check(err error) {
 	}
 }
 
+// checks for a
+// character within
+// a string
 func charInString(text, del string) bool {
 	for _, char := range text {
 		if del == string(char) {
@@ -46,6 +50,23 @@ func charInString(text, del string) bool {
 		}
 	}
 	return false
+}
+
+// regex function to
+// check whether argument
+// provided is a uuid or not
+func isUUID(uuid string) bool {
+
+	// pattern copied again shamelessly
+	// from https://bit.ly/2Ruz66f
+	pattern := "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b"
+	matched, _ := regexp.MatchString(pattern, uuid) // check exactly for pattern matching
+
+	if matched {
+		return true
+	} else {
+		return false
+	}
 }
 
 // function to split strings
