@@ -24,9 +24,8 @@ import (
 var databaseCommands = []string{
 	"get",   // gets value from a key
 	"set",   // sets value to a key
-	"del",   // TODO deleted a pair
+	"del",   // deleted a pair
 	"all",   // lists all pairs
-	"help",  // TODO lists some documentation
 	"info",  // returns size and path of database
 	"count", // returns number of pairs in database
 }
@@ -102,11 +101,16 @@ func databaseExecutor(command string) (string, error) {
 				return "", errors.New("value for key `" + databaseCommand[1] + "` not specified for database `" + databaseName + "`")
 			}
 			return dSet(databaseName, databaseCommand[1], strings.Join(databaseCommand[2:], " "))
+		case databaseCommands[2]: // `del`
+			if len(databaseCommand) < 2 {
+				return "", errors.New("value to be deleted not specified for database `" + databaseName + "`")
+			}
+			return dDel(databaseName, databaseCommand[1])
 		case databaseCommands[3]: // `all`
 			return dAll(databaseName)
-		case databaseCommands[5]: // `info`
+		case databaseCommands[4]: // `info`
 			return dInfo(databaseName)
-		case databaseCommands[6]: // `count`
+		case databaseCommands[5]: // `count`
 			return dCount(databaseName)
 		default:
 			return "", errors.New("command `" + databaseCommand[0] + "` not recognized")
@@ -121,8 +125,8 @@ func databaseExecutor(command string) (string, error) {
 // extract value from key provided
 func dGet(databaseName string, key string) (string, error) {
 
-	if _, hasKey := pairs[key]; hasKey {
-		return pairs[key], nil
+	if _, hasKey := pairs[databaseName + "_" + key]; hasKey {
+		return pairs[databaseName + "_" + key], nil
 	}
 
 	p := Parrington{databasePath: path(databaseName)}
@@ -133,7 +137,7 @@ func dGet(databaseName string, key string) (string, error) {
 	value, err := p.getValue(key)
 
 	if err == nil {
-		pairs[key] = value
+		pairs[databaseName + "_" + key] = value
 	}
 
 	return value, err
@@ -155,6 +159,15 @@ func dSet(databaseName string, key string, value string) (string, error) {
 	}
 
 	return pair, nil
+}
+
+// deletes pair
+func dDel(databaseName, key string) (string, error) {
+	p := Parrington{databasePath: path(databaseName)}
+	p.writeToBody()
+	p.writeToPairs()
+
+	return p.delPair(key)
 }
 
 // returns all keys
