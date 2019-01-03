@@ -51,23 +51,6 @@ func (p *Parrington) writeToPairs() {
 	p.pairs = splitString(p.readBody(), "\n")
 }
 
-// infers the datatype from
-// string provided as a value
-// of a key pair on a single line
-func dataInferer(value string) string {
-
-	if charInString(value, " ") { 					  // check if there's a space in the value
-		return "list"
-	} else if _, err := strconv.Atoi(value); err == nil { // check if the value can be converted to a number
-		return "number"
-	} else if isUUID(value) {							  //
-		return "uuid"
-	} else { 											  // return String as default value
-		return "string"
-	}
-
-}
-
 // returns value from key provided
 // directory from the Parrington.paris
 // by performing a linear search
@@ -81,6 +64,32 @@ func (p Parrington) getValue(key string) (string, error) {
 		}
 	}
 	return "", errors.New("no value found for key `" + key + "`")
+}
+
+// replaces line where
+// where key is found
+// with a backspace '\b'
+func (p Parrington) delPair(key string) (string, error) {
+
+	input, err := ioutil.ReadFile(p.databasePath)
+	check(err)
+
+	lines := strings.Split(string(input), "\n")
+
+	for i, line := range lines {
+		if splitString(line, " ")[0] == key {
+			lines[i] = ""
+			output := strings.Join(lines, "\n")
+
+			err = ioutil.WriteFile(p.databasePath, []byte(output), 0644)
+			check(err)
+
+			return "deleted : " + key, nil
+		}
+	}
+
+	return "", errors.New("no value found for key `" + key + "`")
+
 }
 
 // returns all keys
