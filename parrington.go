@@ -56,12 +56,12 @@ func (p *Parrington) writeToPairs() {
 // of a key pair on a single line
 func dataInferer(value string) string {
 
-	if !charInString(value, " ") { // check if there's a space in the value
-		return "List"
+	if charInString(value, " ") { // check if there's a space in the value
+		return "list"
 	} else if _, err := strconv.Atoi(value); err == nil { // check if the value can be converted to a number
-		return "Number"
+		return "number"
 	} else { // return String as default value
-		return "String"
+		return "string"
 	}
 
 }
@@ -74,7 +74,8 @@ func (p Parrington) getValue(key string) (string, error) {
 		piece := splitString(line, " ")
 
 		if piece[0] == key {
-			return strings.Join(piece[2:], " "), nil
+			returnValue := strings.Join(piece[2:], " ")
+			return dataInferer(returnValue) + " : " + returnValue, nil
 		}
 	}
 	return "", errors.New("no value found for key `" + key + "`")
