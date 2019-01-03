@@ -8,6 +8,7 @@ import (
 	"io"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -62,11 +63,7 @@ func isUUID(uuid string) bool {
 	pattern := "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b"
 	matched, _ := regexp.MatchString(pattern, uuid) // check exactly for pattern matching
 
-	if matched {
-		return true
-	} else {
-		return false
-	}
+	return matched
 }
 
 // function to split strings
@@ -132,4 +129,29 @@ func lineCounter(r io.Reader) int {
 			return count + 1
 		}
 	}
+}
+
+// checks if string
+// provided is a float
+// or an integer
+func isNumeric(num string) bool {
+	_, err := strconv.ParseFloat(num ,64)
+	return err == nil
+}
+
+// infers the datatype from
+// string provided as a value
+// of a key pair on a single line
+func dataInferer(value string) string {
+
+	if charInString(value, " ") { 					  // check if there's a space in the value
+		return "list"
+	} else if isNumeric(value) { 						  // check if the value can be converted to a number
+		return "number"
+	} else if isUUID(value) {							  // check if the value matches a UUID regexp
+		return "uuid"
+	} else { 											  // return String as default value
+		return "string"
+	}
+
 }
