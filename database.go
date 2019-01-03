@@ -183,7 +183,22 @@ func dInfo(databaseName string) (string, error) {
 
 }
 
+// returns total number of lines
+// in database - 1 to give number
+// of pairs in the line
 func dCount(databaseName string) (string, error) {
 	r, _ := os.Open(path(databaseName))
 	return "count : " + strconv.Itoa(lineCounter(r)-1), nil
+}
+
+// defunct version for getting
+// number of total pairs in database
+// since it'll take too long to read
+// to file and parser pairs to `p.paris`
+func _dCount(databaseName string) (string, error) {
+	p := Parrington{databasePath: path(databaseName)}
+	p.writeToBody()
+	p.writeToPairs()
+
+	return strconv.Itoa(len(p.pairs)), nil
 }
