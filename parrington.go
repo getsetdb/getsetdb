@@ -56,11 +56,13 @@ func (p *Parrington) writeToPairs() {
 // of a key pair on a single line
 func dataInferer(value string) string {
 
-	if charInString(value, " ") { // check if there's a space in the value
+	if charInString(value, " ") { 					  // check if there's a space in the value
 		return "list"
 	} else if _, err := strconv.Atoi(value); err == nil { // check if the value can be converted to a number
 		return "number"
-	} else { // return String as default value
+	} else if isUUID(value) {							  //
+		return "uuid"
+	} else { 											  // return String as default value
 		return "string"
 	}
 
