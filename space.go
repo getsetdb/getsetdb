@@ -151,8 +151,34 @@ func sRename(command string) (string, error) {
 	// check if database exists
 	// in path for gsdb space -
 	// /tmp/gsdb/
-	if _, err := os.Stat(path(oldDatabaseName)); !os.IsNotExist(err) { // if oldDatabaseName does exist
+	if _, err := os.Stat(path(oldDatabaseName)); !os.IsNotExist(err) { // if oldDatabaseName exists
+
+		var databases []string
+
+		// check for old
+		// databases to be
+		// named `newDatabaseName`
+		files, err := ioutil.ReadDir("/tmp/gsdb/")
+		check(err)
+
+		// loops over all files
+		// (databases) in the
+		// gsdb path - /tmp/gsdb/
+		// and append them to
+		// `databases` without
+		// their file extensions
+		for _, f := range files {
+			databases = append(databases, removeExtension(f.Name()))
+		}
+
+		// if `newDatabaseName` exists
+		// on gsdb path on disk
+		if stringInSlice(newDatabaseName, databases) {
+			return "", errors.New(fmt.Sprintf("database `%s` already exists", newDatabaseName))
+		}
+
 		_ = os.Rename(path(oldDatabaseName), path(newDatabaseName))
+
 		return fmt.Sprintf("renamed `%s` to `%s`", oldDatabaseName, newDatabaseName), nil
 	} else { // if oldDatabaseName does not exist
 		return "", errors.New("database `" + oldDatabaseName + "` does not exist")
@@ -180,4 +206,3 @@ func sVersion() (string, error) {
 func sDatetime() (string, error) {
 	return time.Now().String(), nil
 }
-
