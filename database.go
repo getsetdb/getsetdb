@@ -28,6 +28,7 @@ var databaseCommands = []string{
 	"all",   // lists all pairs
 	"info",  // returns size and path of database
 	"count", // returns number of pairs in database
+	"exists", // returns boolean value if database is found
 }
 
 // databaseExecutor for validating
@@ -112,6 +113,8 @@ func databaseExecutor(command string) (string, error) {
 			return dInfo(databaseName)
 		case databaseCommands[5]: // `count`
 			return dCount(databaseName)
+		case databaseCommands[6]: // `exists`
+			return "exists : true", nil
 		default:
 			return "", errors.New("command `" + databaseCommand[0] + "` not recognized")
 	}
