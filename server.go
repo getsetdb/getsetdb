@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -16,6 +17,7 @@ var pairs = map[string]string{}
 // of 127.0.0.1:4998
 func serve(c net.Conn) {
 	// log a message of connection
+	fmt.Print("\t")
 	log.Println("established connection with", c.RemoteAddr().String())
 
 	for {
@@ -69,6 +71,7 @@ func serve(c net.Conn) {
 
 	}
 
+	fmt.Print("\t")
 	log.Println("terminated connection with", c.RemoteAddr().String())
 
 	_ = c.Close()
