@@ -112,3 +112,26 @@ func (p Parrington) getKeys() (string, error) {
 
 	return "", errors.New("no keys in database")
 }
+
+// returns all keys
+// existing in database
+// in a slice
+func (p Parrington) getKeysSlice() ([]string, error) {
+
+	var keys []string
+
+	for _, line := range p.pairs {
+		if len(line) == 0 {
+			continue
+		}
+		piece := splitString(line, " ")
+		keys = apppend(keys, piece[0])
+	}
+
+	if len(keys) != 0 {
+		return keys, nil
+	}
+
+	return "", errors.New("no keys in database")
+
+}
