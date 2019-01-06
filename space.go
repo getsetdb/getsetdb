@@ -73,10 +73,10 @@ func sNew(command string) (string, error) {
 	}
 
 	if len(commandSlice) > 2 {
-		return "created databases `" + strings.Join(commandSlice[1:], "`, `") + "`", nil
+		return "new : `" + strings.Join(commandSlice[1:], "`, `") + "`", nil
 	}
 
-	return "created database `" + commandSlice[1] + "`", nil
+	return "new : `" + commandSlice[1] + "`", nil
 
 }
 
@@ -104,10 +104,10 @@ func sDel(command string) (string, error) {
 	}
 
 	if len(commandSlice) > 2 {
-		return "deleted databases `" + strings.Join(commandSlice[1:], "`, `") + "`", nil
+		return "del : `" + strings.Join(commandSlice[1:], "`, `") + "`", nil
 	}
 
-	return "deleted database `" + commandSlice[1] + "`", nil
+	return "del : `" + commandSlice[1] + "`", nil
 
 }
 
@@ -179,7 +179,7 @@ func sRename(command string) (string, error) {
 
 		_ = os.Rename(path(oldDatabaseName), path(newDatabaseName))
 
-		return fmt.Sprintf("renamed `%s` to `%s`", oldDatabaseName, newDatabaseName), nil
+		return fmt.Sprintf("%s : %s", oldDatabaseName, newDatabaseName), nil
 	} else { // if oldDatabaseName does not exist
 		return "", errors.New("database `" + oldDatabaseName + "` does not exist")
 	}
