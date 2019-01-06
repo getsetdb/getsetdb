@@ -8,7 +8,7 @@ import (
 )
 
 const port string = ":4998"
-const version string = "0.99"
+const version string = "1.0"
 
 func main() {
 
