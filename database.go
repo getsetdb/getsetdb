@@ -152,9 +152,12 @@ func dGet(databaseName string, key string) (string, error) {
 func dSet(databaseName string, key string, value string) (string, error) {
 
 	p := Parrington{databasePath: path(databaseName)}
+	p.writeToBody()
+	p.writeToPairs()
+
 	keys, err := p.getKeysSlice()
 
-	if err != nil {
+	if err == nil {
 		if stringInSlice(key, keys) {
 			return "", errors.New("key `" + key + "` already exists")
 		}
@@ -179,6 +182,10 @@ func dDel(databaseName, key string) (string, error) {
 	p := Parrington{databasePath: path(databaseName)}
 	p.writeToBody()
 	p.writeToPairs()
+
+	if _, hasKey := pairs[databaseName + "_" + key]; hasKey {
+		delete(pairs, databaseName + "_" + key)
+	}
 
 	return p.delPair(key)
 }
