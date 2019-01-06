@@ -150,6 +150,16 @@ func dGet(databaseName string, key string) (string, error) {
 // sets a value to
 // the key provided
 func dSet(databaseName string, key string, value string) (string, error) {
+
+	p := Parrington{databasePath: path(databaseName)}
+	keys, err := p.getKeysSlice()
+
+	if err != nil {
+		if stringInSlice(key, keys) {
+			return "", errors.New("key `" + key + "` already exists")
+		}
+	}
+
 	file, err := os.OpenFile(path(databaseName), os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	check(err)
 
