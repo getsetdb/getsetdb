@@ -14,7 +14,7 @@ To see the instructions for building from source, [refer this](#building-from-so
 
 - for Ubuntu / Debian users - 
     - option 1 - download a pre-built binary and place it in `/usr/bin/`
-    - option 2 - download a pre-built `.deb` package
+    - option 2 - download a pre-built `.deb` package from here - [getsetdb-v1.deb](https://github.com/getsetdb/getsetdb/raw/master/packages/debian/getsetdb-v1.deb)
 - for Fedora / Red Hat Enterprise Linux users - 
     - download a pre-built binary and place it in `/usr/bin/`
 - for MacOS users
