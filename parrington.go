@@ -125,13 +125,13 @@ func (p Parrington) getKeysSlice() ([]string, error) {
 			continue
 		}
 		piece := splitString(line, " ")
-		keys = apppend(keys, piece[0])
+		keys = append(keys, piece[0])
 	}
 
 	if len(keys) != 0 {
 		return keys, nil
 	}
 
-	return "", errors.New("no keys in database")
+	return keys, errors.New("no keys in database")
 
 }
