@@ -78,7 +78,10 @@ func (p Parrington) delPair(key string) (string, error) {
 
 	for i, line := range lines {
 		if splitString(line, " ")[0] == key {
-			lines[i] = ""
+
+			lines[i] = lines[len(lines)-1]
+			lines = lines[:len(lines)-1]
+
 			output := strings.Join(lines, "\n")
 
 			err = ioutil.WriteFile(p.databasePath, []byte(output), 0644)
