@@ -23,7 +23,7 @@ func main() {
 	  \___\___|\__|___/\___|\__|___/|___/
 
 	author  : mentix02
-	version : 1.0
+	version : 1.0.1
 
 	`)
 
