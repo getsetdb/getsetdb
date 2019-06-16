@@ -7,8 +7,10 @@ import (
 	"os"
 )
 
-const port string = ":4998"
-const version string = "1.0"
+const (
+	port string = ":4998"
+	version string = "1.0"
+)
 
 func main() {
 
